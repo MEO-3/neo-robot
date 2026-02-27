@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from textual import work
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
@@ -43,12 +44,26 @@ class MainScreen(Screen):
     """
 
     BINDINGS = [
-        ("f5", "run_code", "Run"),
-        ("f2", "toggle_mode", "Toggle Mode"),
-        ("ctrl+x", "stop_code", "Stop"),
-        ("ctrl+l", "clear_console", "Clear Console"),
-        ("ctrl+e", "clear_editor", "Clear Editor"),
+        Binding("f5", "run_code", "Run", priority=True),
+        Binding("f2", "toggle_mode", "Toggle Mode", priority=True),
+        Binding("ctrl+x", "stop_code", "Stop", priority=True),
+        Binding("ctrl+l", "clear_console", "Clear Console", priority=True),
+        Binding("ctrl+e", "clear_editor", "Clear Editor", priority=True),
     ]
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        """Control which bindings appear in the Footer based on current mode.
+
+        Returning ``None`` hides the binding from the footer entirely.
+        Returning ``True`` shows it as active.
+        """
+        # Always visible in both modes
+        if action in ("toggle_mode", "stop_code", "clear_console", "quit"):
+            return True
+        # Script-mode-only actions: hide in interactive mode
+        if action in ("run_code", "clear_editor"):
+            return None if self._interactive_mode else True
+        return True
 
     def __init__(self, executor: CodeExecutor, **kwargs) -> None:  # type: ignore[override]
         super().__init__(**kwargs)
@@ -92,6 +107,9 @@ class MainScreen(Screen):
         else:
             main_split.display = True
             interactive_pane.display = False
+
+        # Refresh the footer so check_action hides/shows mode-specific bindings
+        self.refresh_bindings()
 
     # -- event handlers -------------------------------------------------
 

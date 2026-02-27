@@ -6,6 +6,7 @@ import argparse
 from typing import Any
 
 from textual.app import App
+from textual.binding import Binding
 
 from neo_robot.config.settings import AppConfig, HardwareConfig
 from neo_robot.engine import CodeExecutor
@@ -20,7 +21,7 @@ class NeoRobotApp(App):
     TITLE = "Bình dân học STEM"
 
     BINDINGS = [
-        ("ctrl+q", "quit", "Quit"),
+        Binding("ctrl+q", "quit", "Quit", priority=True),
     ]
 
     def __init__(self, config: AppConfig | None = None, **kwargs) -> None:  # type: ignore[override]
