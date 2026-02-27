@@ -1,5 +1,5 @@
 .vscode
-
+ai-agent/
 # ignore .pyc files
 __pycache__/
 
