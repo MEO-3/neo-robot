@@ -8,7 +8,7 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
-from neo_robot.engine.executor import CodeExecutor, ExecutionResult
+from neo_robot.engine import CodeExecutor, ExecutionResult
 from neo_robot.ui.widgets.code_editor import CodeEditor
 from neo_robot.ui.widgets.console import ConsoleOutput
 from neo_robot.ui.widgets.toolbar import Toolbar

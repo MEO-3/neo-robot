@@ -8,7 +8,7 @@ from typing import Any
 from textual.app import App
 
 from neo_robot.config.settings import AppConfig, HardwareConfig
-from neo_robot.engine.executor import CodeExecutor
+from neo_robot.engine import CodeExecutor
 from neo_robot.hardware.mock_arm import MockRobotArm
 from neo_robot.ui.screens.main_screen import MainScreen
 
@@ -47,7 +47,7 @@ class NeoRobotApp(App):
                     lower_arm_pin=hw.lower_arm_pin,
                     hand_pin=hw.hand_pin,
                 )
-            except Exception:  # noqa: BLE001
+            except Exception:
                 self.notify(
                     "Could not connect to hardware – using simulation mode.",
                     severity="warning",
@@ -70,7 +70,7 @@ class NeoRobotApp(App):
 def main() -> None:
     """Parse CLI arguments and launch the TUI."""
     parser = argparse.ArgumentParser(
-        description="NEO Robot – Learn Python with Robotics",
+        description="NEO ThingBot: a Textual TUI for controlling a simple robot arm and learning programming concepts.",
     )
     parser.add_argument(
         "--mock",
