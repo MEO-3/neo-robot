@@ -1,0 +1,2 @@
+thingbot-telemetrix
+textual>=0.40
