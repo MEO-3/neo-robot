@@ -23,36 +23,62 @@ class CodeExecutor:
     def __init__(self, robot: Any) -> None:
         self._robot = robot
         self._log_callback: Callable[[str], None] | None = None
+        # Persistent namespace for interactive (REPL) mode.
+        # Lazily initialised by the first call to ``execute_line``.
+        self._interactive_ns: dict[str, Any] | None = None
 
     def set_log_callback(self, callback: Callable[[str], None]) -> None:
         """Set a callback that receives real-time log lines."""
         self._log_callback = callback
 
-    def execute(self, code: str) -> ExecutionResult:
-        """Run *code* and return an :class:`ExecutionResult`."""
-        output_buf = io.StringIO()
+    # -- helpers --------------------------------------------------------
+
+    def _make_print(self, output_buf: io.StringIO) -> Callable[..., None]:
+        """Build a sandboxed ``print`` that captures to *output_buf*."""
 
         def _print(*args: Any, **kwargs: Any) -> None:
-            """Replacement ``print`` that writes to our buffer."""
-            kwargs.pop("file", None)  # ignore file= to prevent escape
+            kwargs.pop("file", None)
             print(*args, **kwargs, file=output_buf)
-            # Also forward to the real-time callback if set
             line = io.StringIO()
             print(*args, **kwargs, file=line)
             if self._log_callback:
                 self._log_callback(line.getvalue().rstrip("\n"))
 
+        return _print
+
+    def _make_namespace(self, output_buf: io.StringIO) -> dict[str, Any]:
+        """Build a restricted namespace containing the student API."""
         arm_api = StudentArmAPI(self._robot, log=self._log_callback)
 
         def _delay(seconds: float) -> None:
-            """Top-level ``delay(seconds)`` available in student code."""
             arm_api.delay(seconds)
 
-        namespace: dict[str, Any] = {
-            "__builtins__": {**SAFE_BUILTINS, "print": _print},
+        return {
+            "__builtins__": {**SAFE_BUILTINS, "print": self._make_print(output_buf)},
             "arm": arm_api,
             "delay": _delay,
         }
+
+    @staticmethod
+    def _extract_error(exc: Exception) -> str:
+        """Return a student-friendly error string with line info."""
+        tb_lines = traceback.format_exception(type(exc), exc, exc.__traceback__)
+        line_num = ""
+        for tb_line in tb_lines:
+            if "<student>" in tb_line:
+                parts = tb_line.strip().split(", ")
+                for part in parts:
+                    if part.startswith("line "):
+                        line_num = f" ({part})"
+                        break
+        return f"Error{line_num}: {exc}"
+
+    # -- batch mode (script editor) -------------------------------------
+
+    def execute(self, code: str) -> ExecutionResult:
+        """Run *code* in a fresh namespace and return an :class:`ExecutionResult`."""
+        output_buf = io.StringIO()
+        namespace = self._make_namespace(output_buf)
 
         try:
             exec(compile(code, "<student>", "exec"), namespace)  # noqa: S102
@@ -68,21 +94,50 @@ class CodeExecutor:
                 success=False,
             )
         except Exception as exc:  # noqa: BLE001
-            # Try to extract a meaningful line number from the traceback
-            tb_lines = traceback.format_exception(type(exc), exc, exc.__traceback__)
-            # Find the last frame that references "<student>"
-            line_num = ""
-            for tb_line in tb_lines:
-                if "<student>" in tb_line:
-                    # e.g. '  File "<student>", line 3, in <module>\n'
-                    parts = tb_line.strip().split(", ")
-                    for part in parts:
-                        if part.startswith("line "):
-                            line_num = f" ({part})"
-                            break
-
             return ExecutionResult(
                 output=output_buf.getvalue(),
-                error=f"Error{line_num}: {exc}",
+                error=self._extract_error(exc),
                 success=False,
             )
+
+    # -- interactive mode (REPL) ----------------------------------------
+
+    def execute_line(self, line: str) -> ExecutionResult:
+        """Execute a single *line* in a persistent namespace.
+
+        Unlike :meth:`execute`, the namespace is kept between calls so
+        that variables defined in one command are available in the next,
+        behaving like a Python REPL session.
+        """
+        output_buf = io.StringIO()
+
+        # Lazily create the persistent namespace on first use
+        if self._interactive_ns is None:
+            self._interactive_ns = self._make_namespace(output_buf)
+        else:
+            # Swap in a fresh print that writes to this call's buffer
+            builtins = self._interactive_ns["__builtins__"]
+            builtins["print"] = self._make_print(output_buf)
+
+        try:
+            exec(compile(line, "<student>", "exec"), self._interactive_ns)  # noqa: S102
+            return ExecutionResult(
+                output=output_buf.getvalue(),
+                success=True,
+            )
+        except SyntaxError as exc:
+            return ExecutionResult(
+                output=output_buf.getvalue(),
+                error=f"Syntax Error: {exc.msg}",
+                success=False,
+            )
+        except Exception as exc:  # noqa: BLE001
+            return ExecutionResult(
+                output=output_buf.getvalue(),
+                error=f"{type(exc).__name__}: {exc}",
+                success=False,
+            )
+
+    def reset_session(self) -> None:
+        """Discard the interactive namespace so the next call starts fresh."""
+        self._interactive_ns = None

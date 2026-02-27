@@ -51,3 +51,24 @@ Screen {
 #console {
     height: 1fr;
 }
+
+/* -- interactive mode pane ---------------------------------- */
+
+#interactive-pane {
+    display: none;          /* hidden by default; toggled by MainScreen */
+    height: 1fr;
+    border: solid darkorange;
+}
+
+#interactive-pane .pane-title {
+    dock: top;
+    height: 1;
+    text-style: bold;
+    color: $text;
+    background: darkorange;
+    padding: 0 1;
+}
+
+#interactive {
+    height: 1fr;
+}
