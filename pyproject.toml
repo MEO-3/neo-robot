@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "neo-robot"
+version = "0.1.0"
+description = "Educational robotics TUI for teaching Python to K-12 students"
+requires-python = ">=3.11"
+dependencies = [
+    "textual>=0.40",
+    "thingbot-telemetrix",
+]
+
+[project.optional-dependencies]
+dev = [
+    "textual-dev",
+    "pytest",
+]
+
+[project.scripts]
+neo-robot = "neo_robot.ui.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neo_robot"]

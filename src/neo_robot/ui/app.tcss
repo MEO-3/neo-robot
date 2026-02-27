@@ -1,0 +1,53 @@
+/* ============================================================
+   NEO Robot – Textual CSS
+   ============================================================ */
+
+/* -- overall layout ----------------------------------------- */
+
+Screen {
+    layout: vertical;
+}
+
+#main-split {
+    height: 1fr;
+}
+
+/* -- editor pane (left) ------------------------------------- */
+
+#editor-pane {
+    width: 1fr;
+    border: solid green;
+}
+
+#editor-pane .pane-title {
+    dock: top;
+    height: 1;
+    text-style: bold;
+    color: $text;
+    background: $success;
+    padding: 0 1;
+}
+
+#editor {
+    height: 1fr;
+}
+
+/* -- console pane (right) ----------------------------------- */
+
+#console-pane {
+    width: 1fr;
+    border: solid dodgerblue;
+}
+
+#console-pane .pane-title {
+    dock: top;
+    height: 1;
+    text-style: bold;
+    color: $text;
+    background: $primary;
+    padding: 0 1;
+}
+
+#console {
+    height: 1fr;
+}

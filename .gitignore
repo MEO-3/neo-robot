@@ -1,1 +1,4 @@
 .vscode
+
+# ignore .pyc files
+__pycache__/
