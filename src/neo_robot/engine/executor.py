@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import time
 import traceback
 from dataclasses import dataclass, field
 from typing import Any, Callable
@@ -79,6 +80,13 @@ class StudentArmAPI:
         self._log(f"arm.elbow_right({angle})")
         self._robot.lower_arm.turn_right(angle)
 
+    # -- timing ---------------------------------------------------------
+
+    def delay(self, seconds: float) -> None:
+        """Pause execution for *seconds* (can be fractional, e.g. 0.5)."""
+        self._log(f"arm.delay({seconds})")
+        time.sleep(float(seconds))
+
 
 # ---------------------------------------------------------------------------
 # Safe builtins whitelist
@@ -152,9 +160,14 @@ class CodeExecutor:
 
         arm_api = StudentArmAPI(self._robot, log=self._log_callback)
 
+        def _delay(seconds: float) -> None:
+            """Top-level ``delay(seconds)`` available in student code."""
+            arm_api.delay(seconds)
+
         namespace: dict[str, Any] = {
             "__builtins__": {**_SAFE_BUILTINS, "print": _print},
             "arm": arm_api,
+            "delay": _delay,
         }
 
         try:

@@ -13,9 +13,11 @@ _DEFAULT_CODE = """\
 #   arm.turn_right(45)  - rotate the arm right
 #   arm.grab()          - close the gripper
 #   arm.release()       - open the gripper
+#   delay(seconds)      - wait before next command
 #
 # Example: pick up an object
 #   arm.turn_right(90)
+#   delay(1)
 #   arm.grab()
 #   arm.turn_left(90)
 #   arm.release()
