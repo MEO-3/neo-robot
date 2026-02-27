@@ -17,7 +17,7 @@ class NeoRobotApp(App):
     """Textual TUI application for the NEO ThingBot educational platform."""
 
     CSS_PATH = "app.tcss"
-    TITLE = "NEO ThingBot - Bình vụ học STEAM"
+    TITLE = "Bình dân học STEM"
 
     BINDINGS = [
         ("ctrl+q", "quit", "Quit"),
