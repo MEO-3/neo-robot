@@ -8,8 +8,6 @@ from thingbot_telemetrix import Telemetrix
 # Servo angle limits
 _MIN_ANGLE = 0
 _MAX_ANGLE = 180
-_GRAB_ANGLE = 60
-_RELEASE_ANGLE = 0
 
 
 class Arm:
@@ -19,31 +17,24 @@ class Arm:
     directional movement helpers.
     """
 
+    _MIN_ANGLE = 0
+    _MAX_ANGLE = 180
+
     def __init__(self, board: Telemetrix, servo_pin: int, name: str = "arm") -> None:
-        self.board = board
+        self.board = board.thingbot()
         self.pin = servo_pin
         self.name = name
         self._current_angle: int = 0
-        # Configure the pin for servo control
-        # self.board.set_pin_mode_servo(self.pin)
-        # Move to initial position
-        # self.set_angle(0)
 
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""
         new_angle = self._current_angle - angle
-        self.set_angle(new_angle)
+        self.control_servo(new_angle)
 
     def turn_right(self, angle: int) -> None:
         """Increase the servo angle by *angle* degrees (turn right)."""
         new_angle = self._current_angle + angle
-        self.set_angle(new_angle)
-
-    def set_angle(self, angle: int) -> None:
-        """Set the servo to an absolute *angle* (clamped to 0-180)."""
-        angle = max(_MIN_ANGLE, min(_MAX_ANGLE, int(angle)))
-        self._current_angle = angle
-        self.board.servo_write(self.pin, angle)
+        self.control_servo(new_angle)
 
     @property
     def angle(self) -> int:
@@ -53,6 +44,8 @@ class Arm:
 
 class Hand(Arm):
     """Gripper / claw end-effector attached to a servo."""
+    _GRAP_ANGLE = 60
+    _RELEASE_ANGLE = 0
 
     def __init__(self, board: Telemetrix, servo_pin: int) -> None:
         super().__init__(board, servo_pin, name="hand")
@@ -60,12 +53,12 @@ class Hand(Arm):
 
     def grab(self) -> None:
         """Close the gripper."""
-        self.set_angle(_GRAB_ANGLE)
+        self.control_servo(self._GRAP_ANGLE)
         self._grabbed = True
 
     def release(self) -> None:
         """Open the gripper."""
-        self.set_angle(_RELEASE_ANGLE)
+        self.control_servo(self._RELEASE_ANGLE)
         self._grabbed = False
 
     @property
