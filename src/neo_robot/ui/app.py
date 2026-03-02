@@ -48,9 +48,11 @@ class NeoRobotApp(App):
                     lower_arm_pin=hw.lower_arm_pin,
                     hand_pin=hw.hand_pin,
                 )
-            except Exception:
+            except Exception as e:
                 self.notify(
-                    "Could not connect to hardware – using simulation mode.",
+                    "Could not connect to hardware – using simulation mode. with error: {e}".format(
+                        e=e
+                    ),
                     severity="warning",
                     timeout=5,
                 )

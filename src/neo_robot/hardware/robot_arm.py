@@ -25,9 +25,9 @@ class Arm:
         self.name = name
         self._current_angle: int = 0
         # Configure the pin for servo control
-        self.board.set_pin_mode_servo(self.pin)
+        # self.board.set_pin_mode_servo(self.pin)
         # Move to initial position
-        self.set_angle(0)
+        # self.set_angle(0)
 
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""

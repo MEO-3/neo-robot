@@ -52,14 +52,14 @@ class StudentArmAPI:
 
     # -- elbow ----------------------------------------------------------
 
-    def elbow_left(self, angle: int = 90) -> None:
+    def lift_up(self, angle: int = 90) -> None:
         """Rotate the lower arm (elbow) to the left by *angle* degrees."""
-        self._log(f"arm.elbow_left({angle})")
+        self._log(f"arm.lift_up({angle})")
         self._robot.lower_arm.turn_left(angle)
 
-    def elbow_right(self, angle: int = 90) -> None:
+    def lower_down(self, angle: int = 90) -> None:
         """Rotate the lower arm (elbow) to the right by *angle* degrees."""
-        self._log(f"arm.elbow_right({angle})")
+        self._log(f"arm.lower_down({angle})")
         self._robot.lower_arm.turn_right(angle)
 
     # -- timing ---------------------------------------------------------
