@@ -29,12 +29,17 @@ class Arm:
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""
         new_angle = self._current_angle - angle
-        self.control_servo(new_angle)
+        self.board.control_servo(self.pin, new_angle)
 
     def turn_right(self, angle: int) -> None:
         """Increase the servo angle by *angle* degrees (turn right)."""
         new_angle = self._current_angle + angle
-        self.control_servo(new_angle)
+        self.board.control_servo(self.pin, new_angle)
+        
+    def set_angle(self, angle: int) -> None:
+        """Set the servo to an absolute angle."""
+        self.board.control_servo(self.pin, angle)
+        self._current_angle = angle
 
     @property
     def angle(self) -> int:
@@ -53,12 +58,12 @@ class Hand(Arm):
 
     def grab(self) -> None:
         """Close the gripper."""
-        self.control_servo(self._GRAP_ANGLE)
+        self.board.control_servo(self.pin, self._GRAP_ANGLE)
         self._grabbed = True
 
     def release(self) -> None:
         """Open the gripper."""
-        self.control_servo(self._RELEASE_ANGLE)
+        self.board.control_servo(self.pin, self._RELEASE_ANGLE)
         self._grabbed = False
 
     @property
@@ -86,6 +91,10 @@ class RobotArm:
         self.upper_arm = Arm(self.board, servo_pin=upper_arm_pin, name="upper_arm")
         self.lower_arm = Arm(self.board, servo_pin=lower_arm_pin, name="lower_arm")
         self.hand = Hand(self.board, servo_pin=hand_pin)
+        
+        self.lower_arm.set_angle(90)  # Start with the lower arm at a neutral position
+        self.upper_arm.set_angle(90)  # Start with the upper arm at a neutral position
+        self.hand.release()  # Start with the hand open
 
     def shutdown(self) -> None:
         """Release all servos and close the board connection."""

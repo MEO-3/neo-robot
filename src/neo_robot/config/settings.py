@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 class HardwareConfig:
     """Pin assignments and hardware mode settings."""
 
-    upper_arm_pin: int = 1
-    lower_arm_pin: int = 2
-    hand_pin: int = 3
+    upper_arm_pin: int = 3
+    lower_arm_pin: int = 4
+    hand_pin: int = 5
     use_mock: bool = False  # True = simulated mode (no hardware needed)
 
 
