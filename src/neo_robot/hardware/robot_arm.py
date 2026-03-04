@@ -50,7 +50,7 @@ class Arm:
 class Hand(Arm):
     """Gripper / claw end-effector attached to a servo."""
     _GRAP_ANGLE = 0
-    _RELEASE_ANGLE = 45
+    _RELEASE_ANGLE = 60
 
     def __init__(self, board: Telemetrix, servo_pin: int) -> None:
         super().__init__(board, servo_pin, name="hand")
