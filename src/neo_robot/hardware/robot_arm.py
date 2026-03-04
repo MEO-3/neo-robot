@@ -28,12 +28,12 @@ class Arm:
 
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""
-        new_angle = self._current_angle - angle
+        new_angle = self._current_angle + angle
         self.board.control_servo(self.pin, new_angle)
 
     def turn_right(self, angle: int) -> None:
         """Increase the servo angle by *angle* degrees (turn right)."""
-        new_angle = self._current_angle + angle
+        new_angle = self._current_angle - angle
         self.board.control_servo(self.pin, new_angle)
         
     def set_angle(self, angle: int) -> None:
