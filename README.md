@@ -68,8 +68,8 @@ All code runs in a sandbox with an `arm` object and a small set of safe builtins
 arm.turn_left(angle)      # Rotate upper arm left (default 90)
 arm.turn_right(angle)     # Rotate upper arm right (default 90)
 arm.set_angle(angle)      # Set upper arm to absolute angle (0-180)
-arm.elbow_left(angle)     # Rotate elbow left (default 90)
-arm.elbow_right(angle)    # Rotate elbow right (default 90)
+arm.lift_up(angle)     # Rotate elbow left (default 90)
+arm.lower_down(angle)    # Rotate elbow right (default 90)
 arm.grab()                # Close the gripper
 arm.release()             # Open the gripper
 arm.delay(seconds)        # Pause execution
