@@ -6,16 +6,16 @@ from textual.widgets import TextArea
 
 
 _DEFAULT_CODE = """\
-# Write your Python code here!
-# Use 'arm' to control the robot:
+# Viết mã Python của bạn ở đây!
+# Dùng 'arm' để điều khiển robot:
 #
-#   arm.turn_left(90)   - rotate the arm left
-#   arm.turn_right(45)  - rotate the arm right
-#   arm.grab()          - close the gripper
-#   arm.release()       - open the gripper
-#   delay(seconds)      - wait before next command
+#   arm.turn_left(90)   - xoay tay trái
+#   arm.turn_right(45)  - xoay tay phải
+#   arm.grab()          - kẹp lại
+#   arm.release()       - mở kẹp
+#   delay(seconds)      - đợi trước lệnh tiếp theo
 #
-# Example: pick up an object
+# Ví dụ: gắp một vật
 #   arm.turn_right(90)
 #   delay(1)
 #   arm.grab()

@@ -21,7 +21,7 @@ class NeoRobotApp(App):
     TITLE = "Bình dân học STEM"
 
     BINDINGS = [
-        Binding("ctrl+q", "quit", "Quit", priority=True),
+        Binding("ctrl+q", "quit", "Thoát", priority=True),
     ]
 
     def __init__(self, config: AppConfig | None = None, **kwargs) -> None:  # type: ignore[override]
@@ -50,7 +50,7 @@ class NeoRobotApp(App):
                 )
             except Exception as e:
                 self.notify(
-                    "Could not connect to hardware – using simulation mode. with error: {e}".format(
+                    "Không thể kết nối phần cứng - dùng chế độ mô phỏng. Lỗi: {e}".format(
                         e=e
                     ),
                     severity="warning",

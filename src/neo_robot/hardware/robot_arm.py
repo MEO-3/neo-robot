@@ -4,12 +4,6 @@ from __future__ import annotations
 
 from thingbot_telemetrix import Telemetrix
 
-
-# Servo angle limits
-_MIN_ANGLE = 0
-_MAX_ANGLE = 180
-
-
 class Arm:
     """Single servo-controlled joint.
 
@@ -28,16 +22,28 @@ class Arm:
 
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""
-        new_angle = self._current_angle + angle
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle - angle < self._MIN_ANGLE:
+            raise ValueError(f"Chỉ có thể xoay trái {self._current_angle} độ")
+        new_angle = self._current_angle - angle
         self.board.control_servo(self.pin, new_angle)
+        self._current_angle = new_angle
 
     def turn_right(self, angle: int) -> None:
         """Increase the servo angle by *angle* degrees (turn right)."""
-        new_angle = self._current_angle - angle
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle + angle > self._MAX_ANGLE:
+            raise ValueError(f"Chỉ có thể xoay phải {self._MAX_ANGLE - self._current_angle} độ")
+        new_angle = self._current_angle + angle
         self.board.control_servo(self.pin, new_angle)
+        self._current_angle = new_angle
         
     def set_angle(self, angle: int) -> None:
         """Set the servo to an absolute angle."""
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
         self.board.control_servo(self.pin, angle)
         self._current_angle = angle
 

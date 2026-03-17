@@ -32,12 +32,12 @@ class Toolbar(Horizontal):
     """
 
     def compose(self) -> ComposeResult:
-        yield Button("Run (F5)", id="run-btn", variant="success")
-        yield Button("Stop", id="stop-btn", variant="error", disabled=True)
-        yield Button("Clear Console", id="clear-btn", variant="default")
-        yield Button("Interactive (F2)", id="mode-btn", variant="primary")
+        yield Button("Chạy (F5)", id="run-btn", variant="success")
+        yield Button("Dừng", id="stop-btn", variant="error", disabled=True)
+        yield Button("Xóa bảng điều khiển", id="clear-btn", variant="default")
+        yield Button("Tương tác (F2)", id="mode-btn", variant="primary")
 
     def set_mode_label(self, interactive: bool) -> None:
         """Update the mode button label to reflect the current mode."""
         btn = self.query_one("#mode-btn", Button)
-        btn.label = "Script (F2)" if interactive else "Interactive (F2)"
+        btn.label = "Kịch bản (F2)" if interactive else "Tương tác (F2)"
