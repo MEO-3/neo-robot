@@ -13,6 +13,7 @@ Trẻ sẽ gõ mã ở khung bên trái và xem kết quả ở khung bên phả
 1. Cài Python 3.11+.
 2. Cài ứng dụng (xem phần Cài đặt).
 3. Lần đầu nên chạy chế độ mô phỏng.
+4. Vào phần application, mở `Terminal Emulator` và chạy:
 
 ```bash
 neo-robot --mock
