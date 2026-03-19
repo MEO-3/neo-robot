@@ -4,12 +4,6 @@ from __future__ import annotations
 
 from thingbot_telemetrix import Telemetrix
 
-
-# Servo angle limits
-_MIN_ANGLE = 0
-_MAX_ANGLE = 180
-
-
 class Arm:
     """Single servo-controlled joint.
 
@@ -28,13 +22,30 @@ class Arm:
 
     def turn_left(self, angle: int) -> None:
         """Decrease the servo angle by *angle* degrees (turn left)."""
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle - angle < self._MIN_ANGLE:
+            raise ValueError(f"Chỉ có thể xoay trái {self._current_angle} độ")
         new_angle = self._current_angle - angle
-        self.control_servo(new_angle)
+        self.board.control_servo(self.pin, new_angle)
+        self._current_angle = new_angle
 
     def turn_right(self, angle: int) -> None:
         """Increase the servo angle by *angle* degrees (turn right)."""
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle + angle > self._MAX_ANGLE:
+            raise ValueError(f"Chỉ có thể xoay phải {self._MAX_ANGLE - self._current_angle} độ")
         new_angle = self._current_angle + angle
-        self.control_servo(new_angle)
+        self.board.control_servo(self.pin, new_angle)
+        self._current_angle = new_angle
+        
+    def set_angle(self, angle: int) -> None:
+        """Set the servo to an absolute angle."""
+        if (angle < self._MIN_ANGLE) or (angle > self._MAX_ANGLE):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        self.board.control_servo(self.pin, angle)
+        self._current_angle = angle
 
     @property
     def angle(self) -> int:
@@ -44,8 +55,8 @@ class Arm:
 
 class Hand(Arm):
     """Gripper / claw end-effector attached to a servo."""
-    _GRAP_ANGLE = 60
-    _RELEASE_ANGLE = 0
+    _GRAP_ANGLE = 0
+    _RELEASE_ANGLE = 60
 
     def __init__(self, board: Telemetrix, servo_pin: int) -> None:
         super().__init__(board, servo_pin, name="hand")
@@ -53,12 +64,12 @@ class Hand(Arm):
 
     def grab(self) -> None:
         """Close the gripper."""
-        self.control_servo(self._GRAP_ANGLE)
+        self.board.control_servo(self.pin, self._GRAP_ANGLE)
         self._grabbed = True
 
     def release(self) -> None:
         """Open the gripper."""
-        self.control_servo(self._RELEASE_ANGLE)
+        self.board.control_servo(self.pin, self._RELEASE_ANGLE)
         self._grabbed = False
 
     @property
@@ -86,6 +97,10 @@ class RobotArm:
         self.upper_arm = Arm(self.board, servo_pin=upper_arm_pin, name="upper_arm")
         self.lower_arm = Arm(self.board, servo_pin=lower_arm_pin, name="lower_arm")
         self.hand = Hand(self.board, servo_pin=hand_pin)
+        
+        self.lower_arm.set_angle(90)  # Start with the lower arm at a neutral position
+        self.upper_arm.set_angle(90)  # Start with the upper arm at a neutral position
+        self.hand.release()  # Start with the hand open
 
     def shutdown(self) -> None:
         """Release all servos and close the board connection."""

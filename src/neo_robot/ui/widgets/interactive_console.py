@@ -54,8 +54,8 @@ class InteractiveConsole(Vertical):
     """
 
     BINDINGS = [
-        ("up", "history_prev", "Previous command"),
-        ("down", "history_next", "Next command"),
+        ("up", "history_prev", "Lệnh trước"),
+        ("down", "history_next", "Lệnh tiếp theo"),
     ]
 
     def __init__(self, **kwargs) -> None:  # type: ignore[override]
@@ -65,12 +65,12 @@ class InteractiveConsole(Vertical):
 
     def compose(self) -> ComposeResult:
         yield RichLog(id="repl-log", highlight=True, markup=True, wrap=True)
-        yield Input(placeholder="Type a command and press Enter ...", id="repl-input")
+        yield Input(placeholder="Nhập lệnh và nhấn Enter ...", id="repl-input")
 
     def on_mount(self) -> None:
         log = self.query_one("#repl-log", RichLog)
-        log.write(Text("Interactive Mode (type commands one at a time)", style="bold cyan"))
-        log.write(Text("Type 'help' for available commands.\n", style="dim"))
+        log.write(Text("Chế độ tương tác (nhập từng lệnh một)", style="bold cyan"))
+        log.write(Text("Gõ 'help' để xem các lệnh có sẵn.\n", style="dim"))
 
     # -- input handling -------------------------------------------------
 
@@ -153,29 +153,29 @@ class InteractiveConsole(Vertical):
     def _show_help(self) -> None:
         log = self.query_one("#repl-log", RichLog)
         log.write(Text(""))
-        log.write(Text("Available commands:", style="bold cyan"))
-        log.write(Text("  arm.turn_left(angle)   - rotate arm left"))
-        log.write(Text("  arm.turn_right(angle)  - rotate arm right"))
-        log.write(Text("  arm.grab()             - close the gripper"))
-        log.write(Text("  arm.release()          - open the gripper"))
-        log.write(Text("  arm.elbow_left(angle)  - rotate elbow left"))
-        log.write(Text("  arm.elbow_right(angle) - rotate elbow right"))
-        log.write(Text("  arm.set_angle(angle)   - set absolute angle"))
-        log.write(Text("  delay(seconds)         - pause execution"))
-        log.write(Text("  print(...)             - print a value"))
+        log.write(Text("Các lệnh có sẵn:", style="bold cyan"))
+        log.write(Text("  arm.turn_left(angle)   - xoay tay trái"))
+        log.write(Text("  arm.turn_right(angle)  - xoay tay phải"))
+        log.write(Text("  arm.grab()             - kẹp lại"))
+        log.write(Text("  arm.release()          - mở kẹp"))
+        log.write(Text("  arm.lift_up(angle)     - xoay cẳng tay trái"))
+        log.write(Text("  arm.lower_down(angle)  - xoay cẳng tay phải"))
+        log.write(Text("  arm.set_angle(angle)   - đặt góc tuyệt đối"))
+        log.write(Text("  delay(seconds)         - tạm dừng thực thi"))
+        log.write(Text("  print(...)             - in giá trị"))
         log.write(Text(""))
-        log.write(Text("REPL commands:", style="bold cyan"))
-        log.write(Text("  help     - show this help"))
-        log.write(Text("  clear    - clear the console"))
-        log.write(Text("  history  - show command history"))
+        log.write(Text("Lệnh REPL:", style="bold cyan"))
+        log.write(Text("  help     - hiển thị trợ giúp"))
+        log.write(Text("  clear    - xóa bảng lệnh"))
+        log.write(Text("  history  - xem lịch sử lệnh"))
         log.write(Text(""))
 
     def _show_history(self) -> None:
         log = self.query_one("#repl-log", RichLog)
         if not self._history:
-            log.write(Text("No commands in history.", style="dim"))
+            log.write(Text("Không có lệnh trong lịch sử.", style="dim"))
             return
-        log.write(Text("Command history:", style="bold cyan"))
+        log.write(Text("Lịch sử lệnh:", style="bold cyan"))
         for i, cmd in enumerate(self._history, 1):
             log.write(Text(f"  {i}. {cmd}"))
         log.write(Text(""))

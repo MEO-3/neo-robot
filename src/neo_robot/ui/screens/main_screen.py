@@ -44,11 +44,11 @@ class MainScreen(Screen):
     """
 
     BINDINGS = [
-        Binding("f5", "run_code", "Run", priority=True),
-        Binding("f2", "toggle_mode", "Toggle Mode", priority=True),
-        Binding("ctrl+x", "stop_code", "Stop", priority=True),
-        Binding("ctrl+l", "clear_console", "Clear Console", priority=True),
-        Binding("ctrl+e", "clear_editor", "Clear Editor", priority=True),
+        Binding("f5", "run_code", "Chạy", priority=True),
+        Binding("f2", "toggle_mode", "Chuyển chế độ", priority=True),
+        Binding("ctrl+x", "stop_code", "Dừng", priority=True),
+        Binding("ctrl+l", "clear_console", "Xóa bảng điều khiển", priority=True),
+        Binding("ctrl+e", "clear_editor", "Xóa trình soạn mã", priority=True),
     ]
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
@@ -78,14 +78,14 @@ class MainScreen(Screen):
         # Script mode panes
         with Horizontal(id="main-split"):
             with Vertical(id="editor-pane"):
-                yield Static("Code Editor", classes="pane-title")
+                yield Static("Trình soạn mã", classes="pane-title")
                 yield CodeEditor(id="editor")
             with Vertical(id="console-pane"):
-                yield Static("Console", classes="pane-title")
+                yield Static("Bảng điều khiển", classes="pane-title")
                 yield ConsoleOutput(id="console")
         # Interactive mode pane (hidden by default via CSS)
         with Vertical(id="interactive-pane"):
-            yield Static("Interactive Console", classes="pane-title")
+            yield Static("Bảng lệnh tương tác", classes="pane-title")
             yield InteractiveConsole(id="interactive")
         yield Footer()
 
@@ -129,11 +129,11 @@ class MainScreen(Screen):
         code = editor.get_code()
 
         if not code.strip():
-            console.write_error("No code to run.")
+            console.write_error("Không có mã để chạy.")
             return
 
         self._running = True
-        console.write_status("Running code...")
+        console.write_status("Đang chạy mã...")
         self._run_code_in_worker(code)
 
     def action_stop_code(self) -> None:
@@ -141,10 +141,10 @@ class MainScreen(Screen):
         self.workers.cancel_all()
         if self._interactive_mode:
             repl: InteractiveConsole = self.query_one("#interactive", InteractiveConsole)
-            repl.write_error("Execution stopped by user.")
+            repl.write_error("Đã dừng thực thi theo yêu cầu người dùng.")
         else:
             console: ConsoleOutput = self.query_one("#console", ConsoleOutput)
-            console.write_error("Execution stopped by user.")
+            console.write_error("Đã dừng thực thi theo yêu cầu người dùng.")
         self._running = False
 
     def action_clear_console(self) -> None:
@@ -189,10 +189,10 @@ class MainScreen(Screen):
 
         if result.success:
             self.app.call_from_thread(
-                console.write_status, "Execution complete."
+                console.write_status, "Thực thi hoàn tất."
             )
         else:
-            self.app.call_from_thread(console.write_error, result.error or "Unknown error")
+            self.app.call_from_thread(console.write_error, result.error or "Lỗi không xác định")
 
         self._running = False
 
@@ -214,4 +214,4 @@ class MainScreen(Screen):
             self.app.call_from_thread(repl.write_output, result.output.rstrip("\n"))
 
         if not result.success:
-            self.app.call_from_thread(repl.write_error, result.error or "Unknown error")
+            self.app.call_from_thread(repl.write_error, result.error or "Lỗi không xác định")

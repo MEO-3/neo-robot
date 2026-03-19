@@ -33,9 +33,9 @@ class StudentArmAPI:
         self._log(f"arm.turn_right({angle})")
         self._robot.upper_arm.turn_right(angle)
 
-    def set_angle(self, angle: int) -> None:
+    def set_yaw(self, angle: int) -> None:
         """Set the arm to an absolute angle (0-180)."""
-        self._log(f"arm.set_angle({angle})")
+        self._log(f"arm.set_yaw({angle})")
         self._robot.upper_arm.set_angle(angle)
 
     # -- gripper --------------------------------------------------------
@@ -61,6 +61,11 @@ class StudentArmAPI:
         """Rotate the lower arm (elbow) to the right by *angle* degrees."""
         self._log(f"arm.lower_down({angle})")
         self._robot.lower_arm.turn_right(angle)
+        
+    def set_pitch(self, angle: int) -> None:
+        """Set the arm elbow to absolute angle (0-180)"""
+        self._log(f"arm.set_pitch({angle})")
+        self._robot.lower_arm.set_angle(angle)
 
     # -- timing ---------------------------------------------------------
 

@@ -26,16 +26,29 @@ class MockArm:
         self._current_angle: int = 0
 
     def turn_left(self, angle: int) -> None:
+        if (angle < 0) or (angle > 180):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle - angle < 0:
+            raise ValueError(f"Chỉ có thể xoay trái {self._current_angle} độ")
         new_angle = max(0, self._current_angle - int(angle))
         self._log(f"[{self.name}] turn_left({angle}) -> {new_angle} deg")
         self._current_angle = new_angle
 
     def turn_right(self, angle: int) -> None:
+        if (angle < 0) or (angle > 180):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle + angle > 180:
+            raise ValueError(f"Chỉ có thể xoay phải {180 - self._current_angle} độ")
         new_angle = min(180, self._current_angle + int(angle))
         self._log(f"[{self.name}] turn_right({angle}) -> {new_angle} deg")
         self._current_angle = new_angle
 
     def set_angle(self, angle: int) -> None:
+        if (angle < 0) or (angle > 180):
+            raise ValueError("Góc phải nằm trong khoảng 0 đến 180")
+        if self._current_angle == angle:
+            self._log(f"[{self.name}] set_angle({angle}) -> already at {angle} deg")
+            return
         clamped = max(0, min(180, int(angle)))
         self._log(f"[{self.name}] set_angle({angle}) -> {clamped} deg")
         self._current_angle = clamped

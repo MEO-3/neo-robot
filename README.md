@@ -1,95 +1,140 @@
-# NEO Robot
+# NEO Robot – Hướng dẫn sử dụng
 
-A terminal-based educational platform that teaches K-12 students Python programming through controlling a physical robotic arm. Built with [Textual](https://textual.textualize.io/) for the Raspberry Pi (CLI-only, no desktop required).
+Tài liệu này dành cho phụ huynh, giáo viên hoặc người hỗ trợ cài đặt ứng dụng cho trẻ em sử dụng. Nội dung giải thích mục đích, cách mở ứng dụng và các thao tác cơ bản.
 
-Students write Python code in a split-screen TUI — code editor on the left, live console output on the right — and see their programs drive a 3-joint robotic arm in real time. A simulation mode (`--mock`) allows development and learning without hardware.
+## Ứng dụng dùng để làm gì
 
-## Features
+NEO Robot là ứng dụng học lập trình qua terminal, nơi trẻ viết các lệnh Python đơn giản để điều khiển một cánh tay robot. Ứng dụng chạy trên Raspberry Pi và không cần giao diện desktop.
 
-- **Split-screen TUI** — syntax-highlighted code editor + live console output
-- **Two modes** — Script mode (F5 to run multi-line programs) and Interactive REPL mode (F2 to toggle, line-by-line execution with persistent state)
-- **Sandboxed execution** — restricted `exec()` with whitelisted builtins; no imports, no filesystem, no system calls
-- **Real hardware** — drives servos via Telemetrix protocol over serial
-- **Simulation mode** — `--mock` flag logs arm movements to console; auto-fallback if hardware connection fails
-- **Threaded execution** — code runs in a background worker thread to keep the UI responsive
-- **Student-friendly errors** — error messages include line numbers
-- **Command history** — Up/Down arrows in interactive mode
+Trẻ sẽ gõ mã ở khung bên trái và xem kết quả ở khung bên phải. Ứng dụng có chế độ tương tác để thử từng dòng lệnh.
 
-## Requirements
+## Bắt đầu nhanh (khuyến nghị)
 
-- Python 3.11+
-- [Textual](https://pypi.org/project/textual/) >= 0.40
-- [thingbot-telemetrix](https://pypi.org/project/thingbot-telemetrix/) (only needed for real hardware)
-
-## Installation
+1. Cài Python 3.11+.
+2. Cài ứng dụng (xem phần Cài đặt).
+3. Lần đầu nên chạy chế độ mô phỏng.
 
 ```bash
-# Install in development mode
-pip install -e .
+neo-robot --mock
+```
 
-# With dev dependencies (textual-dev, pytest)
+Nếu đã kết nối robot thật và muốn điều khiển trực tiếp:
+
+```bash
+neo-robot
+```
+
+Nếu không tìm thấy phần cứng, ứng dụng tự chuyển sang chế độ mô phỏng.
+
+## Cài đặt
+
+Từ thư mục dự án:
+
+```bash
+pip install -e .
+```
+
+Nếu cần bộ công cụ phát triển (không bắt buộc):
+
+```bash
 pip install -e ".[dev]"
 ```
 
-## Usage
+## Mở ứng dụng
+
+Từ terminal:
 
 ```bash
-# Run with real hardware
 neo-robot
+```
 
-# Run in simulation mode (no hardware required)
+Hoặc chạy bằng Python:
+
+```bash
+python -m neo_robot
+```
+
+Chạy chế độ mô phỏng (không cần robot):
+
+```bash
 neo-robot --mock
-
-# Or via Python module
-python -m neo_robot --mock
 ```
 
-If `--mock` is not passed, the app attempts real hardware. On failure it automatically falls back to simulation mode with a warning.
+## Cách dùng cơ bản
 
-## Keyboard Shortcuts
+Màn hình có hai chế độ:
 
-| Key | Action |
-|---|---|
-| `F5` | Run code (script mode) |
-| `F2` | Toggle script / interactive mode |
-| `Ctrl+X` | Stop execution |
-| `Ctrl+L` | Clear console output |
-| `Ctrl+E` | Clear code editor |
-| `Ctrl+Q` | Quit |
-| `Up/Down` | Navigate command history (interactive mode) |
+- Chế độ kịch bản (mặc định): trình soạn mã bên trái, bảng điều khiển bên phải.
+- Chế độ tương tác: REPL toàn màn hình để thử từng lệnh.
 
-## Student API
+### Chế độ kịch bản (khuyến nghị cho trẻ)
 
-All code runs in a sandbox with an `arm` object and a small set of safe builtins.
+1. Gõ mã ở khung bên trái.
+2. Nhấn **F5** để chạy.
+3. Kết quả hiển thị ở khung bên phải.
 
-### Robot arm
+Ví dụ:
 
 ```python
-arm.turn_left(angle)      # Rotate upper arm left (default 90)
-arm.turn_right(angle)     # Rotate upper arm right (default 90)
-arm.set_angle(angle)      # Set upper arm to absolute angle (0-180)
-arm.elbow_left(angle)     # Rotate elbow left (default 90)
-arm.elbow_right(angle)    # Rotate elbow right (default 90)
-arm.grab()                # Close the gripper
-arm.release()             # Open the gripper
-arm.delay(seconds)        # Pause execution
+arm.turn_right(90)
+delay(1)
+arm.grab()
+arm.turn_left(90)
+arm.release()
 ```
 
-### Built-in functions
+### Chế độ tương tác (thử từng dòng)
+
+Nhấn **F2** để chuyển chế độ tương tác.
+Gõ một lệnh rồi nhấn **Enter**.
+
+Ví dụ:
 
 ```python
-delay(seconds)            # Pause execution (alias for arm.delay)
-print(...)                # Print to console (captured, sandboxed)
+arm.turn_left(45)
 ```
 
-### Interactive mode commands
+## Phím tắt
 
-| Command | Description |
-|---|---|
-| `help` | Show available commands |
-| `clear` | Clear the REPL log |
-| `history` | Show command history |
+- `F5` – Chạy mã (chế độ kịch bản)
+- `F2` – Chuyển kịch bản / tương tác
+- `Ctrl+X` – Dừng thực thi
+- `Ctrl+L` – Xóa bảng điều khiển
+- `Ctrl+E` – Xóa trình soạn mã
+- `Ctrl+Q` – Thoát
 
-## License
+## Các lệnh trẻ có thể dùng
 
-AGPL-3.0 License (see LICENSE file)
+Ứng dụng chạy trong môi trường an toàn. Trẻ có thể dùng các lệnh sau:
+
+```python
+arm.turn_left(angle)
+arm.turn_right(angle)
+arm.set_angle(angle)
+arm.lift_up(angle)
+arm.lower_down(angle)
+arm.grab()
+arm.release()
+arm.delay(seconds)
+
+delay(seconds)  # bí danh của arm.delay
+print(...)      # in ra bảng điều khiển
+```
+
+Góc quay nằm trong khoảng 0 đến 180 độ.
+
+## Lưu ý an toàn
+
+- Không để tay gần robot khi đang chạy chương trình.
+- Bắt đầu với góc nhỏ và chuyển động chậm.
+- Nên thử ý tưởng mới trong chế độ mô phỏng trước.
+
+## Khắc phục sự cố
+
+- **“Không thể kết nối phần cứng”**: ứng dụng sẽ chuyển sang mô phỏng. Kiểm tra dây, nguồn rồi khởi động lại. Hãy chắc chắn kết nối robot trước khi khởi động ứng dụng nếu muốn dùng chế độ phần cứng.
+- **Không thấy robot chuyển động**: đảm bảo robot đã cấp nguồn và đúng chân kết nối.
+- **Không mở được ứng dụng**: kiểm tra Python 3.11+ và cài lại phụ thuộc.
+
+## Bản quyền
+
+AGPL-3.0 (xem file LICENSE)
