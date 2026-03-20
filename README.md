@@ -136,6 +136,34 @@ Góc quay nằm trong khoảng 0 đến 180 độ.
 - **Không thấy robot chuyển động**: đảm bảo robot đã cấp nguồn và đúng chân kết nối.
 - **Không mở được ứng dụng**: kiểm tra Python 3.11+ và cài lại phụ thuộc.
 
+## Hướng dẫn update trên NEO One
+
+1. Mở terminal trên NEO ONE. (Click góc trên bên phải, biểu tượng terminal)
+2. Chạy lệnh sau để cập nhật ứng dụng, từ thư mục home:
+
+```bash
+cd neo-robot
+git config pull.rebase false # (nếu đã cấu hình trước đó)
+git pull
+pip install -e .
+```
+
+3. Để vào ứng dụng, chạy:
+
+```bash
+neo-robot
+```
+
+### Cài đặt giao diện icon (entry point) để chạy ứng dụng dễ dàng hơn: (Optional)
+
+1. Mở lại terminal trên NEO One để trở về thư mục home:
+2. Chạy lệnh sau để tạo một entry point:
+
+```bash
+chmod +x neo_robot/scripts/create_entrypoint.sh
+./neo_robot/scripts/create_entrypoint.sh
+```
+
 ## Bản quyền
 
 AGPL-3.0 (xem file LICENSE)
